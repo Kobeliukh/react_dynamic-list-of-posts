@@ -17,6 +17,7 @@ export const App = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [userPosts, setUserPosts] = useState<Post[]>([]);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [isLoading, setisLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
 
@@ -96,7 +97,13 @@ export const App = () => {
                   </div>
                 ) : null}
 
-                <PostsList />
+                {!isLoading && userPosts.length > 0 ? (
+                  <PostsList
+                    posts={userPosts}
+                    selectedPostId={selectedPost?.id}
+                    onPostSelect={setSelectedPost}
+                  />
+                ) : null}
               </div>
             </div>
           </div>
