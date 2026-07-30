@@ -1,12 +1,18 @@
 import { useState } from 'react';
 import { User } from '../types/User';
+import classNames from 'classnames';
 
 interface Props {
   users: User[];
+  selectedUserId: number | undefined;
   onUserSelect: (user: User) => void;
 }
 
-export const UserSelector = ({ users, onUserSelect }: Props) => {
+export const UserSelector = ({
+  users,
+  selectedUserId,
+  onUserSelect,
+}: Props) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const handleUserSelect = (user: User) => {
@@ -39,7 +45,9 @@ export const UserSelector = ({ users, onUserSelect }: Props) => {
               <a
                 key={user.id}
                 href={`#user-${index}`}
-                className="dropdown-item"
+                className={classNames('dropdown-item', {
+                  'is-active': selectedUserId === user.id,
+                })}
                 onClick={() => handleUserSelect(user)}
               >
                 {user.name}

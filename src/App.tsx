@@ -67,7 +67,11 @@ export const App = () => {
           <div className="tile is-parent">
             <div className="tile is-child box is-success">
               <div className="block">
-                <UserSelector users={users} onUserSelect={setSelectedUser} />
+                <UserSelector
+                  users={users}
+                  selectedUserId={selectedUser?.id}
+                  onUserSelect={setSelectedUser}
+                />
               </div>
 
               <div className="block" data-cy="MainContent">
