@@ -4,15 +4,11 @@ import classNames from 'classnames';
 
 interface Props {
   users: User[];
-  selectedUserId: number | undefined;
+  selectedUser: User | null;
   onUserSelect: (user: User) => void;
 }
 
-export const UserSelector = ({
-  users,
-  selectedUserId,
-  onUserSelect,
-}: Props) => {
+export const UserSelector = ({ users, selectedUser, onUserSelect }: Props) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const handleUserSelect = (user: User) => {
@@ -30,7 +26,7 @@ export const UserSelector = ({
           aria-controls="dropdown-menu"
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
         >
-          <span>Choose a user</span>
+          <span>{selectedUser ? selectedUser.name : 'Choose a user'}</span>
 
           <span className="icon is-small">
             <i className="fas fa-angle-down" aria-hidden="true" />
@@ -46,7 +42,7 @@ export const UserSelector = ({
                 key={user.id}
                 href={`#user-${index}`}
                 className={classNames('dropdown-item', {
-                  'is-active': selectedUserId === user.id,
+                  'is-active': selectedUser?.id === user.id,
                 })}
                 onClick={() => handleUserSelect(user)}
               >

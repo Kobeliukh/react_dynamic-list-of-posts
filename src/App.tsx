@@ -70,7 +70,7 @@ export const App = () => {
               <div className="block">
                 <UserSelector
                   users={users}
-                  selectedUserId={selectedUser?.id}
+                  selectedUser={selectedUser}
                   onUserSelect={setSelectedUser}
                 />
               </div>
