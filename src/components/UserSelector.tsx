@@ -3,13 +3,15 @@ import { User } from '../types/User';
 
 interface Props {
   users: User[];
+  onUserSelect: (user: User) => void;
 }
 
-export const UserSelector = ({ users }: Props) => {
+export const UserSelector = ({ users, onUserSelect }: Props) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const handleDropdownToggle = () => {
-    setIsDropdownOpen(!isDropdownOpen);
+  const handleUserSelect = (user: User) => {
+    onUserSelect(user);
+    setIsDropdownOpen(false);
   };
 
   return (
@@ -20,7 +22,7 @@ export const UserSelector = ({ users }: Props) => {
           className="button"
           aria-haspopup="true"
           aria-controls="dropdown-menu"
-          onClick={handleDropdownToggle}
+          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
         >
           <span>Choose a user</span>
 
@@ -38,6 +40,7 @@ export const UserSelector = ({ users }: Props) => {
                 key={user.id}
                 href={`#user-${index}`}
                 className="dropdown-item"
+                onClick={() => handleUserSelect(user)}
               >
                 {user.name}
               </a>
