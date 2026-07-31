@@ -24,8 +24,10 @@ export const App = () => {
   );
   const [isUserPostsLoading, setIsUserPostsLoading] = useState(false);
   const [isPostCommentsLoading, setIsPostCommentsLoading] = useState(false);
-  const [hasUserPostsError, setHasUserPostsError] = useState(false);
-  const [hasPostCommentsError, setHasPostCommentsError] = useState(false);
+  const [errors, setErrors] = useState({
+    userPosts: false,
+    postComments: false,
+  });
 
   // fetch the users
   useEffect(() => {
@@ -46,7 +48,7 @@ export const App = () => {
       }
 
       try {
-        setHasUserPostsError(false);
+        setErrors(currentErrors => ({ ...currentErrors, userPosts: false }));
         setIsUserPostsLoading(true);
 
         const postsResponse = await client.get<Post[]>(
@@ -55,7 +57,7 @@ export const App = () => {
 
         setUserPosts(postsResponse);
       } catch {
-        setHasUserPostsError(true);
+        setErrors(currentErrors => ({ ...currentErrors, userPosts: true }));
       } finally {
         setIsUserPostsLoading(false);
       }
@@ -74,7 +76,7 @@ export const App = () => {
 
     const fetchPostComments = async () => {
       try {
-        setHasPostCommentsError(false);
+        setErrors(currentErrors => ({ ...currentErrors, postComments: false }));
         setIsPostCommentsLoading(true);
 
         const commentsResponse = await client.get<Comment[]>(
@@ -83,7 +85,7 @@ export const App = () => {
 
         setSelectedPostComments(commentsResponse);
       } catch {
-        setHasPostCommentsError(true);
+        setErrors(currentErrors => ({ ...currentErrors, postComments: true }));
       } finally {
         setIsPostCommentsLoading(false);
       }
@@ -98,7 +100,7 @@ export const App = () => {
   }, [selectedUser]);
 
   const isNoPostsAvailable =
-    !hasUserPostsError &&
+    !errors.userPosts &&
     !isUserPostsLoading &&
     selectedUser &&
     userPosts.length === 0;
@@ -124,7 +126,7 @@ export const App = () => {
 
                 {isUserPostsLoading && <Loader />}
 
-                {hasUserPostsError && (
+                {errors.userPosts && (
                   <div
                     className="notification is-danger"
                     data-cy="PostsLoadingError"
@@ -165,7 +167,7 @@ export const App = () => {
                 post={selectedPost}
                 isPostCommentsLoading={isPostCommentsLoading}
                 selectedPostComments={selectedPostComments}
-                hasPostCommentsError={hasPostCommentsError}
+                hasPostCommentsError={errors.postComments}
               />
             </div>
           </div>
