@@ -12,14 +12,20 @@ import { useEffect, useState } from 'react';
 import { User } from './types/User';
 import { client } from './utils/fetchClient';
 import { Post } from './types/Post';
+import { Comment } from './types/Comment';
 
 export const App = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [userPosts, setUserPosts] = useState<Post[]>([]);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-  const [isLoading, setisLoading] = useState(false);
-  const [hasError, setHasError] = useState(false);
+  const [selectedPostComments, setSelectedPostComments] = useState<Comment[]>(
+    [],
+  );
+  const [isUserPostsLoading, setIsUserPostsLoading] = useState(false);
+  const [isPostCommentsLoading, setIsPostCommentsLoading] = useState(false);
+  const [hasUserPostsError, setHasUserPostsError] = useState(false);
+  const [hasPostCommentsError, setHasPostCommentsError] = useState(false);
 
   // fetch the users
   useEffect(() => {
@@ -32,7 +38,7 @@ export const App = () => {
     fetchUsers();
   }, []);
 
-  // fetch the posts of the selected user
+  // fetch posts of the selected user
   useEffect(() => {
     const fetchUserPosts = async () => {
       if (!selectedUser) {
@@ -40,8 +46,8 @@ export const App = () => {
       }
 
       try {
-        setHasError(false);
-        setisLoading(true);
+        setHasUserPostsError(false);
+        setIsUserPostsLoading(true);
 
         const postsResponse = await client.get<Post[]>(
           `/posts?userId=${selectedUser.id}`,
@@ -49,17 +55,53 @@ export const App = () => {
 
         setUserPosts(postsResponse);
       } catch {
-        setHasError(true);
+        setHasUserPostsError(true);
       } finally {
-        setisLoading(false);
+        setIsUserPostsLoading(false);
       }
     };
 
     fetchUserPosts();
   }, [selectedUser]);
 
+  // fetch comments for the selected post
+  useEffect(() => {
+    if (!selectedPost) {
+      setSelectedPostComments([]);
+
+      return;
+    }
+
+    const fetchPostComments = async () => {
+      try {
+        setHasPostCommentsError(false);
+        setIsPostCommentsLoading(true);
+
+        const commentsResponse = await client.get<Comment[]>(
+          `/comments?postId=${selectedPost?.id}`,
+        );
+
+        setSelectedPostComments(commentsResponse);
+      } catch {
+        setHasPostCommentsError(true);
+      } finally {
+        setIsPostCommentsLoading(false);
+      }
+    };
+
+    fetchPostComments();
+  }, [selectedPost]);
+
+  useEffect(() => {
+    setSelectedPost(null);
+    setSelectedPostComments([]);
+  }, [selectedUser]);
+
   const isNoPostsAvailable =
-    !hasError && !isLoading && selectedUser && userPosts.length === 0;
+    !hasUserPostsError &&
+    !isUserPostsLoading &&
+    selectedUser &&
+    userPosts.length === 0;
 
   return (
     <main className="section">
@@ -80,9 +122,9 @@ export const App = () => {
                   <p data-cy="NoSelectedUser">No user selected</p>
                 )}
 
-                {isLoading && <Loader />}
+                {isUserPostsLoading && <Loader />}
 
-                {hasError && (
+                {hasUserPostsError && (
                   <div
                     className="notification is-danger"
                     data-cy="PostsLoadingError"
@@ -97,7 +139,7 @@ export const App = () => {
                   </div>
                 ) : null}
 
-                {!isLoading && userPosts.length > 0 ? (
+                {!isUserPostsLoading && userPosts.length > 0 ? (
                   <PostsList
                     posts={userPosts}
                     selectedPostId={selectedPost?.id}
@@ -115,11 +157,16 @@ export const App = () => {
               'is-parent',
               'is-8-desktop',
               'Sidebar',
-              'Sidebar--open',
+              { 'Sidebar--open': selectedPost },
             )}
           >
             <div className="tile is-child box is-success ">
-              <PostDetails />
+              <PostDetails
+                post={selectedPost}
+                isPostCommentsLoading={isPostCommentsLoading}
+                selectedPostComments={selectedPostComments}
+                hasPostCommentsError={hasPostCommentsError}
+              />
             </div>
           </div>
         </div>
