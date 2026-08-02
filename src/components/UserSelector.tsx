@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { User } from '../types/User';
 import classNames from 'classnames';
 
@@ -16,8 +16,30 @@ export const UserSelector = ({ users, selectedUser, onUserSelect }: Props) => {
     setIsDropdownOpen(false);
   };
 
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!dropdownRef.current?.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener('click', handleClickOutside);
+    }
+
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [isDropdownOpen]);
+
   return (
-    <div data-cy="UserSelector" className="dropdown is-active">
+    <div
+      data-cy="UserSelector"
+      className={classNames('dropdown', {
+        'is-active': isDropdownOpen,
+      })}
+      ref={dropdownRef}
+    >
       <div className="dropdown-trigger">
         <button
           type="button"
@@ -34,24 +56,22 @@ export const UserSelector = ({ users, selectedUser, onUserSelect }: Props) => {
         </button>
       </div>
 
-      {isDropdownOpen && (
-        <div className="dropdown-menu" id="dropdown-menu" role="menu">
-          <div className="dropdown-content">
-            {users.map((user, index) => (
-              <a
-                key={user.id}
-                href={`#user-${index}`}
-                className={classNames('dropdown-item', {
-                  'is-active': selectedUser?.id === user.id,
-                })}
-                onClick={() => handleUserSelect(user)}
-              >
-                {user.name}
-              </a>
-            ))}
-          </div>
+      <div className="dropdown-menu" id="dropdown-menu" role="menu">
+        <div className="dropdown-content">
+          {users.map((user, index) => (
+            <a
+              key={user.id}
+              href={`#user-${index}`}
+              className={classNames('dropdown-item', {
+                'is-active': selectedUser?.id === user.id,
+              })}
+              onClick={() => handleUserSelect(user)}
+            >
+              {user.name}
+            </a>
+          ))}
         </div>
-      )}
+      </div>
     </div>
   );
 };

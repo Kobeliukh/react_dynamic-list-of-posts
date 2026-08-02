@@ -40,6 +40,9 @@ export const PostDetails = ({
     !isPostCommentsLoading &&
     selectedPostComments.length > 0;
 
+  const shouldShowWriteComment =
+    !isPostCommentsLoading && !hasPostCommentsError && !isWriteCommentFormOpen;
+
   const createNewComment = async (commentData: CommentData) => {
     try {
       setIsSubmitting(true);
@@ -63,6 +66,10 @@ export const PostDetails = ({
     client.delete(`/comments/${commentId}`);
     onCommentDelete(commentId);
   };
+
+  if (!post) {
+    return null;
+  }
 
   return (
     <div className="content" data-cy="PostDetails">
@@ -102,7 +109,7 @@ export const PostDetails = ({
                     >
                       <div className="message-header">
                         <a
-                          href="mailto:misha@mate.academy"
+                          href={`mailto:${comment.email}`}
                           data-cy="CommentAuthor"
                         >
                           {comment.name}
@@ -126,7 +133,7 @@ export const PostDetails = ({
                 </>
               )}
 
-              {!hasPostCommentsError && !isWriteCommentFormOpen && (
+              {shouldShowWriteComment && (
                 <button
                   data-cy="WriteCommentButton"
                   type="button"
@@ -140,7 +147,7 @@ export const PostDetails = ({
           </>
         )}
 
-        {!hasPostCommentsError && isWriteCommentFormOpen && (
+        {post && !hasPostCommentsError && isWriteCommentFormOpen && (
           <NewCommentForm
             isSubmitting={isSubmitting}
             onSubmitSuccess={createNewComment}
