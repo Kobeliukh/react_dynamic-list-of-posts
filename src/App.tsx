@@ -112,6 +112,12 @@ export const App = () => {
     setSelectedPostComments(currentComments => [...currentComments, comment]);
   };
 
+  const handleCommentDelete = (commentId: number) => {
+    setSelectedPostComments(currentComments =>
+      currentComments.filter(comment => comment.id !== commentId),
+    );
+  };
+
   const isNoPostsAvailable =
     !errors.userPosts &&
     !isUserPostsLoading &&
@@ -185,6 +191,7 @@ export const App = () => {
                 onWriteCommentFormOpen={setIsWriteCommentFormOpen}
                 onAddCommentError={handleAddCommentError}
                 onAddComment={handleAddComment}
+                onCommentDelete={handleCommentDelete}
               />
             </div>
           </div>

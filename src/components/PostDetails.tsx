@@ -14,6 +14,7 @@ interface Props {
   onWriteCommentFormOpen: (value: boolean) => void;
   onAddCommentError: () => void;
   onAddComment: (comment: Comment) => void;
+  onCommentDelete: (commentId: number) => void;
 }
 
 export const PostDetails = ({
@@ -25,6 +26,7 @@ export const PostDetails = ({
   onWriteCommentFormOpen,
   onAddCommentError,
   onAddComment,
+  onCommentDelete,
 }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -55,6 +57,11 @@ export const PostDetails = ({
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleCommentDelete = (commentId: number) => {
+    client.delete(`/comments/${commentId}`);
+    onCommentDelete(commentId);
   };
 
   return (
@@ -105,6 +112,7 @@ export const PostDetails = ({
                           type="button"
                           className="delete is-small"
                           aria-label="delete"
+                          onClick={() => handleCommentDelete(comment.id)}
                         >
                           delete button
                         </button>
