@@ -24,6 +24,7 @@ export const App = () => {
   );
   const [isUserPostsLoading, setIsUserPostsLoading] = useState(false);
   const [isPostCommentsLoading, setIsPostCommentsLoading] = useState(false);
+  const [isWriteCommentFormOpen, setIsWriteCommentFormOpen] = useState(false);
   const [errors, setErrors] = useState({
     userPosts: false,
     postComments: false,
@@ -99,6 +100,10 @@ export const App = () => {
     setSelectedPostComments([]);
   }, [selectedUser]);
 
+  useEffect(() => {
+    setIsWriteCommentFormOpen(false);
+  }, [selectedPost]);
+
   const isNoPostsAvailable =
     !errors.userPosts &&
     !isUserPostsLoading &&
@@ -168,6 +173,8 @@ export const App = () => {
                 isPostCommentsLoading={isPostCommentsLoading}
                 selectedPostComments={selectedPostComments}
                 hasPostCommentsError={errors.postComments}
+                isWriteCommentFormOpen={isWriteCommentFormOpen}
+                onWriteCommentFormOpen={setIsWriteCommentFormOpen}
               />
             </div>
           </div>

@@ -8,6 +8,8 @@ interface Props {
   isPostCommentsLoading: boolean;
   selectedPostComments: Comment[];
   hasPostCommentsError: boolean;
+  isWriteCommentFormOpen: boolean;
+  onWriteCommentFormOpen: (value: boolean) => void;
 }
 
 export const PostDetails = ({
@@ -15,6 +17,8 @@ export const PostDetails = ({
   isPostCommentsLoading,
   selectedPostComments,
   hasPostCommentsError,
+  isWriteCommentFormOpen,
+  onWriteCommentFormOpen,
 }: Props) => {
   return (
     <div className="content" data-cy="PostDetails">
@@ -77,18 +81,21 @@ export const PostDetails = ({
                 </>
               ) : null}
 
-              <button
-                data-cy="WriteCommentButton"
-                type="button"
-                className="button is-link"
-              >
-                Write a comment
-              </button>
+              {!isWriteCommentFormOpen && (
+                <button
+                  data-cy="WriteCommentButton"
+                  type="button"
+                  className="button is-link"
+                  onClick={() => onWriteCommentFormOpen(true)}
+                >
+                  Write a comment
+                </button>
+              )}
             </div>
           </>
         )}
 
-        <NewCommentForm />
+        {isWriteCommentFormOpen && <NewCommentForm />}
       </div>
     </div>
   );
