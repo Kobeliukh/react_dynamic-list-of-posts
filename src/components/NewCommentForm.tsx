@@ -73,7 +73,9 @@ export const NewCommentForm = ({ isSubmitting, onSubmitSuccess }: Props) => {
     try {
       await onSubmitSuccess(newComment);
       setFormValues({ ...formValues, comment: '' });
-    } catch {}
+    } catch {
+      setFormValues({ ...formValues });
+    }
   };
 
   return (
