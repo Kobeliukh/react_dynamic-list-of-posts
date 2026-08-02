@@ -67,12 +67,16 @@ export const PostDetails = ({
       comment => comment.id === commentId,
     );
 
+    if (!commentToDelete) {
+      return;
+    }
+
+    onCommentDelete(commentId);
+
     try {
       await client.delete(`/comments/${commentId}`);
-      onCommentDelete(commentId);
     } catch {
-      onCommentDelete(commentId);
-      onAddComment(commentToDelete as Comment);
+      onAddComment(commentToDelete);
     }
   };
 

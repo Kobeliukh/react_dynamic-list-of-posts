@@ -21,19 +21,19 @@ export const NewCommentForm = ({ isSubmitting, onSubmitSuccess }: Props) => {
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFormErrors({ ...formErrors, name: '' });
-    setFormValues({ ...formValues, name: event.target.value.trim() });
+    setFormValues({ ...formValues, name: event.target.value });
   };
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFormErrors({ ...formErrors, email: '' });
-    setFormValues({ ...formValues, email: event.target.value.trim() });
+    setFormValues({ ...formValues, email: event.target.value });
   };
 
   const handleCommentChange = (
     event: React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
     setFormErrors({ ...formErrors, comment: '' });
-    setFormValues({ ...formValues, comment: event.target.value.trim() });
+    setFormValues({ ...formValues, comment: event.target.value });
   };
 
   const handleFormReset = (event: React.FormEvent<HTMLFormElement>) => {
@@ -48,15 +48,21 @@ export const NewCommentForm = ({ isSubmitting, onSubmitSuccess }: Props) => {
 
     const newErrors = { ...formErrors };
 
-    if (!formValues.name) {
+    const fields = Object.fromEntries(
+      Object.entries(formValues).map(([key, values]) => {
+        return [key, values.trim()];
+      }),
+    );
+
+    if (!fields.name) {
       newErrors.name = 'Name is required';
     }
 
-    if (!formValues.email) {
+    if (!fields.email) {
       newErrors.email = 'Email is required';
     }
 
-    if (!formValues.comment) {
+    if (!fields.comment) {
       newErrors.comment = 'Enter some text';
     }
 
@@ -66,12 +72,12 @@ export const NewCommentForm = ({ isSubmitting, onSubmitSuccess }: Props) => {
       return;
     }
 
-    const { comment: body, ...otherFormData } = formValues;
+    const { comment: body, ...otherFormData } = fields;
 
     const newComment = { body, ...otherFormData };
 
     try {
-      await onSubmitSuccess(newComment);
+      await onSubmitSuccess(newComment as CommentData);
       setFormValues({ ...formValues, comment: '' });
     } catch {
       setFormValues({ ...formValues });
