@@ -108,6 +108,10 @@ export const App = () => {
     setErrors(currentErrors => ({ ...currentErrors, postComments: true }));
   };
 
+  const handleAddComment = (comment: Comment) => {
+    setSelectedPostComments(currentComments => [...currentComments, comment]);
+  };
+
   const isNoPostsAvailable =
     !errors.userPosts &&
     !isUserPostsLoading &&
@@ -180,6 +184,7 @@ export const App = () => {
                 isWriteCommentFormOpen={isWriteCommentFormOpen}
                 onWriteCommentFormOpen={setIsWriteCommentFormOpen}
                 onAddCommentError={handleAddCommentError}
+                onAddComment={handleAddComment}
               />
             </div>
           </div>

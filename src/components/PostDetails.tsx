@@ -13,6 +13,7 @@ interface Props {
   isWriteCommentFormOpen: boolean;
   onWriteCommentFormOpen: (value: boolean) => void;
   onAddCommentError: () => void;
+  onAddComment: (comment: Comment) => void;
 }
 
 export const PostDetails = ({
@@ -23,6 +24,7 @@ export const PostDetails = ({
   isWriteCommentFormOpen,
   onWriteCommentFormOpen,
   onAddCommentError,
+  onAddComment,
 }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -40,10 +42,12 @@ export const PostDetails = ({
     try {
       setIsSubmitting(true);
 
-      await client.post('/comments', {
+      const newCommentResponse = await client.post<Comment>('/comments', {
         postId: post?.id,
         ...commentData,
       });
+
+      onAddComment(newCommentResponse);
     } catch {
       onAddCommentError();
 
