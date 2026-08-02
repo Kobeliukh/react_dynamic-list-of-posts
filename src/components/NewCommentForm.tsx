@@ -7,17 +7,17 @@ interface Props {
   onSubmitSuccess: (comment: CommentData) => void;
 }
 
+const DEFAULT_FORM_VALUES = {
+  name: '',
+  email: '',
+  comment: '',
+};
+
+const DEFAULT_FORM_ERRORS = { ...DEFAULT_FORM_VALUES };
+
 export const NewCommentForm = ({ isSubmitting, onSubmitSuccess }: Props) => {
-  const [formValues, setFormValues] = useState({
-    name: '',
-    email: '',
-    comment: '',
-  });
-  const [formErrors, setFormErrors] = useState({
-    name: '',
-    email: '',
-    comment: '',
-  });
+  const [formValues, setFormValues] = useState(DEFAULT_FORM_VALUES);
+  const [formErrors, setFormErrors] = useState(DEFAULT_FORM_ERRORS);
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFormErrors({ ...formErrors, name: '' });
@@ -34,6 +34,13 @@ export const NewCommentForm = ({ isSubmitting, onSubmitSuccess }: Props) => {
   ) => {
     setFormErrors({ ...formErrors, comment: '' });
     setFormValues({ ...formValues, comment: event.target.value });
+  };
+
+  const handleFormReset = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    setFormValues(DEFAULT_FORM_VALUES);
+    setFormErrors(DEFAULT_FORM_ERRORS);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -70,7 +77,11 @@ export const NewCommentForm = ({ isSubmitting, onSubmitSuccess }: Props) => {
   };
 
   return (
-    <form data-cy="NewCommentForm" onSubmit={handleSubmit}>
+    <form
+      data-cy="NewCommentForm"
+      onSubmit={handleSubmit}
+      onReset={handleFormReset}
+    >
       <div className="field" data-cy="NameField">
         <label className="label" htmlFor="comment-author-name">
           Author Name
