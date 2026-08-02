@@ -21,19 +21,19 @@ export const NewCommentForm = ({ isSubmitting, onSubmitSuccess }: Props) => {
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFormErrors({ ...formErrors, name: '' });
-    setFormValues({ ...formValues, name: event.target.value });
+    setFormValues({ ...formValues, name: event.target.value.trim() });
   };
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFormErrors({ ...formErrors, email: '' });
-    setFormValues({ ...formValues, email: event.target.value });
+    setFormValues({ ...formValues, email: event.target.value.trim() });
   };
 
   const handleCommentChange = (
     event: React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
     setFormErrors({ ...formErrors, comment: '' });
-    setFormValues({ ...formValues, comment: event.target.value });
+    setFormValues({ ...formValues, comment: event.target.value.trim() });
   };
 
   const handleFormReset = (event: React.FormEvent<HTMLFormElement>) => {
@@ -128,7 +128,7 @@ export const NewCommentForm = ({ isSubmitting, onSubmitSuccess }: Props) => {
 
         <div className="control has-icons-left has-icons-right">
           <input
-            type="text"
+            type="email"
             name="email"
             id="comment-author-email"
             placeholder="email@test.com"

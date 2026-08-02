@@ -62,9 +62,18 @@ export const PostDetails = ({
     }
   };
 
-  const handleCommentDelete = (commentId: number) => {
-    client.delete(`/comments/${commentId}`);
-    onCommentDelete(commentId);
+  const handleCommentDelete = async (commentId: number) => {
+    const commentToDelete = selectedPostComments.find(
+      comment => comment.id === commentId,
+    );
+
+    try {
+      await client.delete(`/comments/${commentId}`);
+      onCommentDelete(commentId);
+    } catch {
+      onCommentDelete(commentId);
+      onAddComment(commentToDelete as Comment);
+    }
   };
 
   if (!post) {
