@@ -104,6 +104,10 @@ export const App = () => {
     setIsWriteCommentFormOpen(false);
   }, [selectedPost]);
 
+  const handleAddCommentError = () => {
+    setErrors(currentErrors => ({ ...currentErrors, postComments: true }));
+  };
+
   const isNoPostsAvailable =
     !errors.userPosts &&
     !isUserPostsLoading &&
@@ -175,6 +179,7 @@ export const App = () => {
                 hasPostCommentsError={errors.postComments}
                 isWriteCommentFormOpen={isWriteCommentFormOpen}
                 onWriteCommentFormOpen={setIsWriteCommentFormOpen}
+                onAddCommentError={handleAddCommentError}
               />
             </div>
           </div>

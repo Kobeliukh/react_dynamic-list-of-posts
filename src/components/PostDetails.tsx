@@ -1,7 +1,9 @@
 import { Loader } from './Loader';
 import { NewCommentForm } from './NewCommentForm';
 import { Post } from '../types/Post';
-import { Comment } from '../types/Comment';
+import { Comment, CommentData } from '../types/Comment';
+import { client } from '../utils/fetchClient';
+import { useState } from 'react';
 
 interface Props {
   post: Post | null;
@@ -10,6 +12,7 @@ interface Props {
   hasPostCommentsError: boolean;
   isWriteCommentFormOpen: boolean;
   onWriteCommentFormOpen: (value: boolean) => void;
+  onAddCommentError: () => void;
 }
 
 export const PostDetails = ({
@@ -19,7 +22,37 @@ export const PostDetails = ({
   hasPostCommentsError,
   isWriteCommentFormOpen,
   onWriteCommentFormOpen,
+  onAddCommentError,
 }: Props) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const shouldShowNoCommentsMessage =
+    !hasPostCommentsError &&
+    !isPostCommentsLoading &&
+    selectedPostComments.length === 0;
+
+  const shouldShowComments =
+    !hasPostCommentsError &&
+    !isPostCommentsLoading &&
+    selectedPostComments.length > 0;
+
+  const createNewComment = async (commentData: CommentData) => {
+    try {
+      setIsSubmitting(true);
+
+      await client.post('/comments', {
+        postId: post?.id,
+        ...commentData,
+      });
+    } catch {
+      onAddCommentError();
+
+      throw new Error();
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="content" data-cy="PostDetails">
       <div className="content" data-cy="PostDetails">
@@ -40,13 +73,13 @@ export const PostDetails = ({
                 </div>
               )}
 
-              {!isPostCommentsLoading && selectedPostComments.length === 0 ? (
+              {shouldShowNoCommentsMessage && (
                 <p className="title is-4" data-cy="NoCommentsMessage">
                   No comments yet
                 </p>
-              ) : null}
+              )}
 
-              {!isPostCommentsLoading && selectedPostComments.length > 0 ? (
+              {shouldShowComments && (
                 <>
                   <p className="title is-4">Comments:</p>
 
@@ -79,9 +112,9 @@ export const PostDetails = ({
                     </article>
                   ))}
                 </>
-              ) : null}
+              )}
 
-              {!isWriteCommentFormOpen && (
+              {!hasPostCommentsError && !isWriteCommentFormOpen && (
                 <button
                   data-cy="WriteCommentButton"
                   type="button"
@@ -95,7 +128,12 @@ export const PostDetails = ({
           </>
         )}
 
-        {isWriteCommentFormOpen && <NewCommentForm />}
+        {!hasPostCommentsError && isWriteCommentFormOpen && (
+          <NewCommentForm
+            isSubmitting={isSubmitting}
+            onSubmitSuccess={createNewComment}
+          />
+        )}
       </div>
     </div>
   );

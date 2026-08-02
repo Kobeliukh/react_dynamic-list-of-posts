@@ -1,7 +1,13 @@
 import classNames from 'classnames';
 import React, { useState } from 'react';
+import { CommentData } from '../types/Comment';
 
-export const NewCommentForm: React.FC = () => {
+interface Props {
+  isSubmitting: boolean;
+  onSubmitSuccess: (comment: CommentData) => void;
+}
+
+export const NewCommentForm = ({ isSubmitting, onSubmitSuccess }: Props) => {
   const [formValues, setFormValues] = useState({
     name: '',
     email: '',
@@ -30,7 +36,7 @@ export const NewCommentForm: React.FC = () => {
     setFormValues({ ...formValues, comment: event.target.value });
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const newErrors = { ...formErrors };
@@ -52,6 +58,15 @@ export const NewCommentForm: React.FC = () => {
 
       return;
     }
+
+    const { comment: body, ...otherFormData } = formValues;
+
+    const newComment = { body, ...otherFormData };
+
+    try {
+      await onSubmitSuccess(newComment);
+      setFormValues({ ...formValues, comment: '' });
+    } catch {}
   };
 
   return (
@@ -159,7 +174,9 @@ export const NewCommentForm: React.FC = () => {
         <div className="control">
           <button
             type="submit"
-            className={classNames('button is-link', { 'is-loading': false })}
+            className={classNames('button is-link', {
+              'is-loading': isSubmitting,
+            })}
           >
             Add
           </button>
